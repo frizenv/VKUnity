@@ -65,7 +65,7 @@ namespace Utils
 			}
 			else
 			{
-				throw new Exception($"Key {key} already exists");
+				throw new Exception($"Key {key} is Exist");
 			}
 		}
 
@@ -77,10 +77,6 @@ namespace Utils
 				item.Dispose();
 
 				return _instance._callbacks.Remove(key);
-			}
-			else
-			{
-				throw new Exception($"Key {key} is not found");
 			}
 
 			return false;
