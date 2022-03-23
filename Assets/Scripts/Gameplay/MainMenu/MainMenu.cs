@@ -3,65 +3,66 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+using VKMessages;
 
 namespace Gameplay.MainMenu
 {
 	public class MainMenu : MonoBehaviour
 	{
-		[SerializeField] private Button _authButton = default;
-		[SerializeField] private Button _getDataButton = default;
+		[SerializeField] private Button _getUserDataButton = default;
+		[SerializeField] private Button _getEmailButton = default;
 		[SerializeField] private TextMeshProUGUI _answerText = default;
 
 		private void Awake()
 		{
-			_authButton.onClick.AddListener(AuthButtonClickedEventHandler);
-			_getDataButton.onClick.AddListener(GetDataButtonClickedEventHandler);
+			_getUserDataButton.onClick.AddListener(GetUserDataButtonClickedEventHandler);
+			_getEmailButton.onClick.AddListener(GetEmailButtonClickedEventHandler);
 		}
 
 		private void OnDestroy()
 		{
-			_authButton.onClick.RemoveListener(AuthButtonClickedEventHandler);
-			_getDataButton.onClick.RemoveListener(GetDataButtonClickedEventHandler);
+			_getUserDataButton.onClick.RemoveListener(GetUserDataButtonClickedEventHandler);
+			_getEmailButton.onClick.RemoveListener(GetEmailButtonClickedEventHandler);
 		}
 
-		private void AuthButtonClickedEventHandler()
+		private void GetUserDataButtonClickedEventHandler()
 		{
 			try
 			{
-				ExternalIncomingScriptCall.Add<string>(nameof(AuthCallback), AuthCallback);
-				ExternalAppMethods.Auth(nameof(AuthCallback));
+				ExternalIncomingScriptCall.Add<GetUserDataMessage>(nameof(GetUserDataCallback), GetUserDataCallback);
+				ExternalAppMethods.GetUserData(nameof(GetUserDataCallback));
 			}
 			catch (Exception ex)
 			{
-				ExternalIncomingScriptCall.Remove(nameof(AuthCallback));
+				ExternalIncomingScriptCall.Remove(nameof(GetUserDataCallback));
 				Debug.LogError(ex.Message + "\n" + ex.StackTrace);
 			}
 		}
 
-		private void GetDataButtonClickedEventHandler()
+		private void GetEmailButtonClickedEventHandler()
 		{
 			try
 			{
-				ExternalIncomingScriptCall.Add<string>(nameof(GetDataCallback), GetDataCallback);
-				ExternalAppMethods.GetUserData(nameof(GetDataCallback));
+				ExternalIncomingScriptCall.Add<GetEmailMessage>(nameof(GetEmailCallback), GetEmailCallback);
+				ExternalAppMethods.GetEmail(nameof(GetEmailCallback));
 			}
 			catch (Exception ex)
 			{
-				ExternalIncomingScriptCall.Remove(nameof(GetDataCallback));
+				ExternalIncomingScriptCall.Remove(nameof(GetEmailCallback));
 				Debug.LogError(ex.Message + "\n" + ex.StackTrace);
 			}
 		}
 
-		private void AuthCallback(string data)
+		private void GetUserDataCallback(GetUserDataMessage data)
 		{
-			ExternalIncomingScriptCall.Remove(nameof(AuthCallback));
-			_answerText.text = data;
+			ExternalIncomingScriptCall.Remove(nameof(GetUserDataCallback));
+			_answerText.text = data.id.ToString();
 		}
 
-		private void GetDataCallback(string data)
+		private void GetEmailCallback(GetEmailMessage data)
 		{
-			ExternalIncomingScriptCall.Remove(nameof(GetDataCallback));
-			_answerText.text = data;
+			ExternalIncomingScriptCall.Remove(nameof(GetEmailCallback));
+			_answerText.SetText($"Email: {data.email}<br>Sign: {data.sign}");
 		}
 	}
 }
